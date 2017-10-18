@@ -9,6 +9,7 @@ class Test {
 
         test_memory();
         test_files();
+        test_hdr();
 
     } //main
 
@@ -101,10 +102,70 @@ class Test {
 
     } //print_image_data
 
+    static function print_image_data_float(file:String, image:stb.Image.StbImageData) {
+
+        trace('DATA:  $file ${image.w} x ${image.h} comp:${image.comp} req_comp:${image.comp} / ${image.bytes.length} bytes');
+
+        var s = '';
+
+        var bytes = haxe.io.Bytes.ofData(image.bytes);
+        var floats = haxe.io.Float32Array.fromBytes(bytes);
+
+        var len = image.w * image.h;
+
+        for(i in 0 ... len) {
+            for(j in 0 ... image.comp) s += ' ${floats[i*image.comp + j]}';
+            if(i < len-1) s += ' /';
+        }
+
+        trace(s);
+
+    } //print_image_data
+
     static function print_image_info(file:String, image:stb.Image.StbImageInfo) {
 
         trace('INFO:  $file ${image.w} x ${image.h} comp:${image.comp}');
 
     } //print_image_info
+
+    static function test_hdr() {
+
+        trace('------- FROM HDR');
+
+        var file_prefix = './';
+        var files = [
+            'image.hdr'
+        ];
+
+        inline function test_file_data(req_comp:Int) {
+
+            for(file in files) {
+                var data = stb.Image.loadf(haxe.io.Path.join([file_prefix,file]), req_comp);
+                if(data == null) {
+                    trace('FAIL: DATA: $file / ' + stb.Image.failure_reason());
+                } else {
+                    print_image_data_float(file, data);
+                }
+                data = null;
+            }
+
+        } //test_file_data
+
+        inline function test_file_info() {
+            for(file in files) {
+                var info = stb.Image.info(haxe.io.Path.join([file_prefix,file]));
+                if(info == null) {
+                    trace('FAIL: INFO: $file / ' + stb.Image.failure_reason());
+                } else {
+                    print_image_info(file, info);
+                }
+                info = null;
+            }
+        } //test_file_info
+
+        test_file_info();
+        test_file_data(0); // tests default value case
+
+    } //test_files
 
 } //Test
