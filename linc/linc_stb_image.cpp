@@ -104,6 +104,44 @@ namespace linc {
 
         } //load_from_memory
 
+        Dynamic load_float(char const *filename, int req_comp) {
+
+            int w = 0;
+            int h = 0;
+            int comp = 0;
+
+            float * image_floats = stbi_loadf(filename, &w, &h, &comp, req_comp);
+
+            if(!image_floats) return null();
+
+            if(req_comp == 0)
+                req_comp = comp;
+
+            Array<unsigned char> bytes = to_haxe_bytes((unsigned char*)image_floats, w * h * req_comp * sizeof(float));
+
+            return to_image_data(bytes, w, h, comp, req_comp);
+
+        } //load_float
+
+        Dynamic load_float_from_memory(Array<unsigned char> src_bytes, int src_length, int req_comp) {
+
+            int w = 0;
+            int h = 0;
+            int comp = 0;
+
+            float * image_floats = stbi_loadf_from_memory(&src_bytes[0], src_length, &w, &h, &comp, req_comp);
+
+            if(!image_floats) return null();
+            
+            if(req_comp == 0)
+                req_comp = comp;
+
+            Array<unsigned char> bytes = to_haxe_bytes((unsigned char*)image_floats, w * h * req_comp * sizeof(float));
+
+            return to_image_data(bytes, w, h, comp, req_comp);
+
+        } //load_from_memory
+
     //helpers
 
             //note this calls stb_image_free on the image_bytes
@@ -144,6 +182,7 @@ namespace linc {
             return result;
 
         } //to_image_data
+
 
     } //stb_image namespace
 
