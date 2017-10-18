@@ -94,7 +94,7 @@ class Test {
         var s = '';
 
         for(i in 0 ... image.w) {
-            for(j in 0 ... image.comp) s += ' ${image.bytes[i*j]}';
+            for(j in 0 ... image.comp) s += ' ${image.bytes[i*image.comp + j]}';
             if(i < image.w-1) s += ' /';
         }
 
